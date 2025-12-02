@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Produits</title>
+    <style>
+        /* Style très simple et sobre */
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #ffffff;
+            color: #222;
+            margin: 0;
+            padding: 20px;
+        }
+
+        header {
+            margin-bottom: 18px;
+        }
+
+        h1 {
+            font-size: 20px;
+            margin: 0 0 8px 0;
+        }
+
+        nav {
+            margin-bottom: 14px;
+            font-size: 14px;
+        }
+
+        nav a {
+            color: #0b5;
+            text-decoration: none;
+            margin-right: 12px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .panel {
+            border: 1px solid #ddd;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 12px;
+            background: #fafafa;
+        }
+
+        form input[type="text"],
+        form input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin: 6px 0 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            box-sizing: border-box;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 8px 12px;
+            background: #0b5;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 3px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-danger {
+            background: #c33;
+        }
+
+        ul.list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        ul.list li {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .meta {
+            color: #666;
+            font-size: 13px;
+        }
+
+        .empty {
+            color: #666;
+            padding: 12px;
+        }
+
+        footer {
+            margin-top: 18px;
+            font-size: 13px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>Produits</h1>
+        <nav>
+            <a href="/users">Utilisateurs</a>
+            <a href="/products">Produits</a>
+            <a href="/orders">Commandes</a>
+        </nav>
+    </header>
+
+    <section class="panel" aria-labelledby="add-product">
+        <h2 id="add-product" style="font-size:16px;margin:0 0 8px 0;">Ajouter un produit</h2>
+        <form th:action="@{/products/save}" th:object="${product}" method="post">
+            <label for="name">Nom</label>
+            <input id="name" th:field="*{name}" type="text" placeholder="Nom du produit" required />
+
+            <label for="price">Prix</label>
+            <input id="price" th:field="*{price}" type="number" step="0.01" placeholder="0.00" required />
+
+            <div style="margin-top:6px;">
+                <button type="submit" class="btn">Enregistrer</button>
+            </div>
+        </form>
+    </section>
+
+    <section class="panel" aria-labelledby="list-products">
+        <h2 id="list-products" style="font-size:16px;margin:0 0 8px 0;">Liste des produits</h2>
+
+        <div th:if="${#lists.isEmpty(products)}" class="empty">
+            Aucun produit pour le moment.
+        </div>
+
+        <ul th:if="${!#lists.isEmpty(products)}" class="list">
+            <li th:each="p : ${products}">
+                <div>
+                    <div><strong th:text="${p.name}">Nom produit</strong></div>
+                    <div class="meta" th:text="'Prix: $' + ${p.price}">Prix</div>
+                </div>
+
+                <div style="display:flex;gap:8px;align-items:center;">
+                    <div class="meta" th:text="'ID: ' + ${p.id}">ID</div>
+                    <a th:href="@{/products/delete/{id}(id=${p.id})}"
+                       class="btn btn-danger"
+                       onclick="return confirm('Supprimer ce produit ?');">
+                        Supprimer
+                    </a>
+                </div>
+            </li>
+        </ul>
+    </section>
+
+    <footer>
+        <div>Application de démonstration</div>
+    </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Commandes</title>
+    <style>
+        /* Style très simple et sobre (harmonisé avec users/products) */
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #ffffff;
+            color: #222;
+            margin: 0;
+            padding: 20px;
+        }
+
+        header {
+            margin-bottom: 18px;
+        }
+
+        h1 {
+            font-size: 20px;
+            margin: 0 0 8px 0;
+        }
+
+        nav {
+            margin-bottom: 14px;
+            font-size: 14px;
+        }
+
+        nav a {
+            color: #0b5;
+            text-decoration: none;
+            margin-right: 12px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .panel {
+            border: 1px solid #ddd;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 12px;
+            background: #fafafa;
+        }
+
+        form select,
+        form input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin: 6px 0 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            box-sizing: border-box;
+            background: #fff;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 8px 12px;
+            background: #0b5;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 3px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-danger {
+            background: #c33;
+        }
+
+        ul.list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        ul.list li {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .meta {
+            color: #666;
+            font-size: 13px;
+        }
+
+        .empty {
+            color: #666;
+            padding: 12px;
+        }
+
+        footer {
+            margin-top: 18px;
+            font-size: 13px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>Commandes</h1>
+        <nav>
+            <a href="/users">Utilisateurs</a>
+            <a href="/products">Produits</a>
+            <a href="/orders">Commandes</a>
+        </nav>
+    </header>
+
+    <section class="panel" aria-labelledby="add-order">
+        <h2 id="add-order" style="font-size:16px;margin:0 0 8px 0;">Créer une commande</h2>
+
+        <form th:action="@{/orders/save}" th:object="${order}" method="post">
+            <label for="user">Utilisateur</label>
+            <select id="user" th:field="*{user}" required>
+                <option value="" disabled selected>-- Choisir un utilisateur --</option>
+                <option th:each="u : ${users}" th:value="${u.id}" th:text="${u.name}"></option>
+            </select>
+
+            <label for="product">Produit</label>
+            <select id="product" th:field="*{product}" required>
+                <option value="" disabled selected>-- Choisir un produit --</option>
+                <option th:each="p : ${products}" th:value="${p.id}" th:text="${p.name}"></option>
+            </select>
+
+            <label for="quantity">Quantité</label>
+            <input id="quantity" th:field="*{quantity}" type="number" min="1" step="1" placeholder="1" required />
+
+            <div style="margin-top:6px;">
+                <button type="submit" class="btn">Enregistrer</button>
+            </div>
+        </form>
+    </section>
+
+    <section class="panel" aria-labelledby="list-orders">
+        <h2 id="list-orders" style="font-size:16px;margin:0 0 8px 0;">Liste des commandes</h2>
+
+        <div th:if="${#lists.isEmpty(orders)}" class="empty">
+            Aucune commande pour le moment.
+        </div>
+
+        <ul th:if="${!#lists.isEmpty(orders)}" class="list">
+            <li th:each="o : ${orders}">
+                <div>
+                    <div>
+                        <strong th:text="${o.user != null ? o.user.name : '—'}">Utilisateur</strong>
+                        <span class="meta" th:text="' — ' + (${o.product != null ? o.product.name : '—'})">Produit</span>
+                    </div>
+                    <div class="meta" th:text="'Quantité: ' + ${o.quantity}">Quantité</div>
+                </div>
+
+                <div style="display:flex;gap:8px;align-items:center;">
+                    <div class="meta" th:text="'ID: ' + ${o.id}">ID</div>
+                    <a th:href="@{/orders/delete/{id}(id=${o.id})}"
+                       class="btn btn-danger"
+                       onclick="return confirm('Supprimer cette commande ?');">
+                        Supprimer
+                    </a>
+                </div>
+            </li>
+        </ul>
+    </section>
+
+    <footer>
+        <div>Application de démonstration</div>
+    </footer>
+</div>
+</body>
+</html>
